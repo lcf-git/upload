@@ -1,0 +1,8 @@
+/* 消息提示框ok按钮 */
+.messageButtonOk,
+.messageButtonNo
+ {
+    /* background-color: #ff6699 !important;
+    border-color: #ff6699 !important; */
+    color: #fff !important;
+}

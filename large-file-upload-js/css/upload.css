@@ -1,0 +1,23 @@
+/* 上传按钮 */
+.upload_box .upload_inp {
+    display: none;
+}
+
+/* 移除按钮（父盒子）、缩略图、进度条 */
+.upload_box .upload_list,
+.upload_box .upload_abbre,
+.upload_box .upload_progress {
+    display: none;
+}
+
+/* 进度条动画 */
+/* .upload_box .upload_progress .value {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    height: 100%;
+    width: 0%;
+    background: #67c23a;
+    transition: width .3s;
+} */

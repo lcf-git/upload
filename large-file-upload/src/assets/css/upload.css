@@ -1,0 +1,64 @@
+/* 最外层 */
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* 上传按钮 */
+.upload_box .upload_inp {
+    display: none;
+}
+
+/* 移除按钮（父盒子）、缩略图、进度条 */
+.upload_box .upload_list,
+.upload_box .upload_abbre,
+.upload_box .upload_progress {
+    display: none;
+    cursor: default;
+}
+
+/* 显示上传文件列表 */
+.upload_box .upload_list li {
+    /* color: #b1b3b8; */
+    color: #909399;
+    font-size: 16px;
+    /* backdrop-filter:blur(3px) */
+    /* 毛玻璃效果 */
+}
+
+/* 移除按钮 */
+.upload_box .upload_list em,
+.upload_box .upload_abbre em {
+    cursor: pointer;
+    color: red;
+    font-style: normal;
+    font-family: "黑体";
+    margin-left: 10px;
+}
+
+/* section 边框样式 */
+.upload_box {
+    border: 2px dashed #d9d9d9;
+    list-style: none;
+    width: 500px;
+    height: 200px;
+    box-sizing: border-box;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+/* 各上传模块盒子 */
+.item {
+    margin: 10px auto;
+}
+
+/* button 外盒子 */
+.upload_button_box {
+    margin-bottom: 5px;
+}
+
+.upload_box .upload_tip {
+    margin-bottom: 10px;
+}
