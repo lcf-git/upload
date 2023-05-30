@@ -131,7 +131,7 @@
             formData.append('file', _file);  // 需要传的参数
             formData.append('filename', _file.name);  // 需要传的参数
             // 用axios发post请求
-            instance.post('/route/upload_single', formData, {
+            instance.post('/upload_single', formData, {
                 // 文件上传中的回调函数 xhr.upload.onprogress
                 onUploadProgress(ev) {
                     // console.log(ev)

@@ -1,9 +1,20 @@
 /* 最外层 */
 .container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
+}
+
+/* section 边框样式 */
+.upload_box {
+    border: 2px dashed #d9d9d9;
+    list-style: none;
+    width: 460px;
+    height: 200px;
+    box-sizing: border-box;
+    padding: 17px;
+    border-radius: 6px;
 }
 
 /* 上传按钮 */
@@ -28,6 +39,10 @@
     /* 毛玻璃效果 */
 }
 
+.upload_box .upload_list li span:nth-last-child(1) {
+    margin-left: 10px;
+}
+
 /* 移除按钮 */
 .upload_box .upload_list em,
 .upload_box .upload_abbre em {
@@ -35,18 +50,6 @@
     color: red;
     font-style: normal;
     font-family: "黑体";
-    margin-left: 10px;
-}
-
-/* section 边框样式 */
-.upload_box {
-    border: 2px dashed #d9d9d9;
-    list-style: none;
-    width: 500px;
-    height: 200px;
-    box-sizing: border-box;
-    padding: 20px;
-    border-radius: 6px;
 }
 
 /* 各上传模块盒子 */

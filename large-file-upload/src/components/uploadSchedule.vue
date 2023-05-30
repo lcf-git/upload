@@ -1,7 +1,7 @@
 <template>
 
     <div class="item">
-        <h3>单一文件上传「缩略图处理」（由前端生成文件的hash名）</h3>
+        <h3>单一文件上传「缩略图处理」</h3>
         <section class="upload_box" id="upload3">
             <!-- 选择文件 -->
             <!-- accept=".png,.jpg,.jpeg" 限定上传文件的格式「方案二」 -->
@@ -177,7 +177,7 @@
             formData.append('file', _file);  // 需要传的参数
             formData.append('filename', filename);  // 需要传的参数
             // 用axios发post请求
-            instance.post('/route/upload_single_name', formData, {
+            instance.post('/upload_single_name', formData, {
                 // 文件上传中的回调函数 xhr.upload.onprogress
                 onUploadProgress(ev) {
                     // console.log(ev)
@@ -211,8 +211,8 @@
         // upload_abbre
         // 移除文件逻辑
         const clearHandle = () => {
-            upload_abbre.style.display = 'none';  // 显示图片标签
-            upload_abbre_img.src = '';  // 展示图片
+            upload_abbre.style.display = 'none';  // 隐藏图片标签
+            upload_abbre_img.src = '';  // 清空图片
             Uploaded.item1.disabled = false;  // 启用按钮
             _file = null;  // 复制文件置空
             upload_inp.value = null; // 清空本地缓存文件（若不清空，则无法选择重复文件）

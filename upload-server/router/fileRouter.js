@@ -30,12 +30,16 @@ console.log('文件存储路径:', uploadDir)
 //     });
 // };
 
-// const upload = multer({ dest: '../public/upload/temp' });
-//post请求 写个接口测试一下路由会不会报错 
-// router.post('/test',function(req,res){
-//     // res.send(req.body)
-//     res.send('ok')
-// })
+// 清除temp文件夹缓存
+const clearTemp = function clearTemp() {
+    let cachePath = `${uploadDir}\\temp`,
+        fileList = fs.readdirSync(cachePath);
+    // while (fileList.length > 0) {
+    //     fs.unlinkSync(`${cachePath}\\${fileList[0]}`)
+    // }
+    // let isExists = await exists(cachePath);
+    if (fileList.length > 0) fileList.forEach(item => {fs.unlinkSync(`${cachePath}\\${item}`)})
+}
 
 /*-API-*/
 // 延迟函数（测试使用：await delay();）
@@ -53,10 +57,11 @@ const exists = function exists(path) {
     return new Promise(resolve => {
         fs.access(path, fs.constants.F_OK, err => {
             if (err) {
-                // xxx
                 resolve(false);
+                return;
             }
             resolve(true);
+            return;
         });
     });
 }
@@ -65,17 +70,15 @@ const exists = function exists(path) {
 const writeFile = function writeFile(res, path, file, filename, stream) {
     return new Promise((resolve, reject) => {
         if (stream) {
-            // xxx
-            fs.writeFile(path, file, err => {
-                // if (err) {
-                //     reject(err);
-                //     res.send({
-                //         // xxx
-                //         code: 400,
-                //         codeText: err
-                //     });
-                //     return;
-                // }
+            // let [, HASH] = /^([^_]+)_(\d)/.exec(filename);
+            // fs.renameSync(
+            //     process.cwd() + "\\public\\upload\\temp\\" + file.filename,//file.filename：文件最初名字
+            //     `${uploadDir}\\${HASH}\\` + filename, //file_name：新起的名字
+            // );
+            try {
+                let oldPath = file.path,   // || (process.cwd() + "\\public\\upload\\temp\\" + file.filename),
+                    newPath = path   // || (`${uploadDir}\\${HASH}\\` + filename)
+                fs.renameSync(oldPath, newPath); // 原文件目录 -> 新目录
                 resolve();
                 res.send({
                     code: 200,
@@ -84,13 +87,43 @@ const writeFile = function writeFile(res, path, file, filename, stream) {
                     // servicePath: path.replace(__dirname, HOSTNAME)
                     servicePath: path
                 });
-            });
+            } catch (err) {
+                reject(err);
+                res.send({
+                    code: 400,
+                    codeText: err
+                });
+            }
+            return;
+
+            // try {
+            //     let readStream = fs.createReadStream(file.path),  // 读取一个可读的文件流，file.path multer文件的存放地址
+            //     writeStream = fs.createWriteStream(path);  // 写入流（将可读文件或文件切片流通过.pipe通道写入为文件切片）
+            //     readStream.pipe(writeStream);  // 读取readStream文件内容，并将内容写入到writeStream文件中(原内容会被替换)
+            //     readStream.on('end', () => {
+            //         resolve();
+            //         fs.unlinkSync(file.path);  // 写入流（合并文件）后，从文件系统中同步删除文件或符号链接（或参与写入合并过的切片文件流）
+            //         res.send({
+            //             code: 200,
+            //             codeText: 'upload success',
+            //             originalFilename: filename,
+            //             // servicePath: path.replace(__dirname, HOSTNAME),
+            //             servicePath: path
+            //         });
+            //     });
+            // } catch (err) {
+            //     reject(err);
+            //     res.send({
+            //         code: 400,
+            //         codeText: err
+            //     });
+            // }
+            // return;
         }
         fs.writeFile(path, file, err => {
             if (err) {
                 reject(err);
                 res.send({
-                    // xxx
                     code: 400,
                     codeText: err
                 });
@@ -108,10 +141,16 @@ const writeFile = function writeFile(res, path, file, filename, stream) {
     });
 };
 
+// 获取唯一值（随机数）
+const createRandom = () => {
+    let ran = Math.random() * new Date();  // 随机数 * 时间戳
+    return ran.toString(16).replace('.', '')  // 转为16进制，去掉.
+}
+
 // 响应头
 router.use((req, res, next) => {
     // 设置响应头  设置允许跨域
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // res.setHeader('Access-Control-Allow-Origin', '*');
     // 设置响应头  * 表示所有类型的头信息都可以接受
     // res.setHeader('Access-Control-Allow-Headers', '*');
     // 为了防止中文乱码问题，需要设置响应头，
@@ -164,13 +203,14 @@ router.post('/upload_single', async (req, res) => {
   for (let file of files) {//将files循环成单个
       file_ext = file.originalname.substring(file.originalname.lastIndexOf('.') + 1);  // 获取名字后缀
       file_name = req.body.filename.split('.')[0] + '[' + new Date().getTime() + ']' + '.' + file_ext;  // 将文件名改为 文件名[时间戳].xxx 格式
+    //   file_name = req.body.filename.split('.')[0] + '[' + createRandom() + ']' + '.' + file_ext;  // 将文件名改为 文件名[随机数唯一值].xxx 格式
       // 移动文件并且修改文件名字
       fs.renameSync(
           process.cwd() + "\\public\\upload\\temp\\" + file.filename,//file.filename：文件最初名字
           process.cwd() + "\\public\\upload\\" + file_name, //file_name：时间戳新起的名字
       );
       //将改完的文件写进空数组
-      ret_files.push(process.cwd() + "\\public\\upload\\" + file_name)
+      ret_files.push(process.cwd() + "\\public\\upload\\" + file_name);
   }
 
   await delay();  // 延迟函数
@@ -277,6 +317,162 @@ router.post('/upload_single_name', async (req, res) => {
             process.cwd() + "\\public\\upload\\temp\\" + file.filename,//file.filename：文件最初名字
             process.cwd() + "\\public\\upload\\" + filename, //file_name：新起的名字
         );
+    }
+});
+
+// 大文件切片上传 & 合并切片
+const merge = function merge(HASH, count) {
+    return new Promise(async (resolve, reject) => {
+        let path = `${uploadDir}\\${HASH}`,
+            fileList = [],
+            suffix,
+            isExists;
+        isExists = await exists(path);
+        // console.log('merge', path, isExists)
+        if(!isExists) {
+            reject('HASH path is not found!');
+            return;
+        }
+        fileList = fs.readdirSync(path);
+        // console.log('merge', HASH, isExists)
+        if (fileList.length < count) {
+            reject('the clice has not been upload!');
+            return;
+        }
+        fileList.sort((a, b) => {
+            let reg = /_(\d+)/;
+            return reg.exec(a)[1] - reg.exec(b)[1];
+        }).forEach(item => {
+            !suffix ? suffix = /\.([0-9a-zA-Z]+)$/.exec(item)[1] : null;
+            fs.appendFileSync(`${uploadDir}\\${HASH}.${suffix}`, fs.readFileSync(`${path}\\${item}`));
+            fs.unlinkSync(`${path}\\${item}`);
+        })
+        fs.rmdirSync(path);
+        // clearTemp();  // 若断点续传时temp文件夹缓存过多，则清除
+        console.log('文件上传完毕~~');
+        resolve({
+            path: `${uploadDir}\\${HASH}.${suffix}`,
+            filename: `${HASH}.${suffix}`
+        });
+    })
+};
+router.post('/upload_chunk', async (req, res) => {
+    // console.log(req.files[0], req.body.filename)
+    try {
+        // let {
+        //     fields,
+        //     files
+        // } = await multiparty_upload(req);
+        // let fields,
+        //     files
+
+        // let file = (file.file && files.file[0]) || {},
+        //     filename = (fields.filename && fields.filename[0]) || "",
+        let file = req.files[0] || {},
+            filename = req.body.filename || "",
+            path = '',
+            isExists = false;
+        // 创建存放切片的临时目录
+        let [, HASH] = /^([^_]+)_(\d)/.exec(filename);
+        path = `${uploadDir}\\${HASH}`;
+        !fs.existsSync(path) ? fs.mkdirSync(path) : null;
+        // 把切片存储到临时目录中
+        path = `${uploadDir}\\${HASH}\\${filename}`;
+        // console.log(path)
+        isExists = await exists(path);
+        if (isExists) {
+            res.send({
+                code: 200,
+                codeText: 'file is exists',
+                originalFilename: filename,
+                // servicePath: path.replace(__dirname, HOSTNAME),
+                servicePath: path
+            });
+            return;
+        }
+        // console.log('写入目录----------')
+        writeFile(res, path, file, filename, true);  // 写入目录
+        // console.log(process.cwd() + "\\public\\upload\\temp\\" + file.filename)
+        // console.log(`${uploadDir}\\${HASH}\\` + filename)
+        // 移动文件并且修改文件名字
+        // fs.renameSync(
+        //     process.cwd() + "\\public\\upload\\temp\\" + file.filename,//file.filename：文件最初名字
+        //     `${uploadDir}\\${HASH}\\` + filename, //file_name：新起的名字
+        // );
+    } catch (err) {
+        res.send({
+            code: 400,
+            codeText: err
+        })
+    }
+});
+router.post('/upload_merge', async (req, res) => {
+    let {
+        HASH,
+        count
+    } = req.body;
+    // console.log(req.body)
+    // console.log(HASH)
+    try {
+        let {
+            filename,
+            path
+        } = await merge(HASH, count);
+        // console.log('upload_merge', filename, path)
+        res.send({
+            code: 200,
+            codeText: 'merge success',
+            originalFilename: filename,
+            // servicePath: path.replace(__dirname, HOSTNAME),
+            servicePath: path
+        });
+    } catch (err) {
+        res.send({
+            code: 400,
+            codeText: err
+        });
+    }
+});
+router.get('/upload_already', async (req, res) => {
+    let {
+        HASH
+    } = req.query;
+    let path = `${uploadDir}\\${HASH}`,
+        fileList = [];
+        // tempPath = `${uploadDir}\\temp`,
+        // isExists,
+        // oFileList,
+        // newPath;
+    // console.log('upload_already', path)
+    try {
+        fileList = fs.readdirSync(path);
+        fileList = fileList.sort((a,b) => {
+            let reg = /_(\d+)/;
+            return reg.exec(a)[1] - reg.exec(b)[1];
+        });
+        // console.log('upload_already', fileList[fileList.length-1])
+        // isExists = await exists(tempPath);
+        // if(isExists) {
+        //     oFileList = fs.readdirSync(tempPath);
+        //     let index = /_(\d+)/.exec(fileList[fileList.length-1])[1],
+        //         suffix = fileList[fileList.length-1].split('.')[1]
+        //     let file = {}
+        //     file.path = tempPath + '\\' + oFileList[0]
+        //     newPath = path + `\\${HASH}_${+index+1}.${suffix}`
+        //     console.log(newPath, file.path)
+        //     writeFile(null, newPath, file, null, true);  // 写入目录
+        // }
+        res.send({
+            code: 200,
+            codeText: '',
+            fileList: fileList
+        });
+    } catch (err) {
+        res.send({
+            code: 200,
+            codeText: '',
+            fileList: fileList
+        });
     }
 });
 

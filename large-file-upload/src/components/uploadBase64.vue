@@ -168,7 +168,7 @@
             return new Promise(resolve => {
                 // 将图片转为base64码格式
                 let fileReader = new FileReader(); // 异步操作
-                fileReader.readAsDataURL(file);  // 将文件解析为base64
+                fileReader.readAsDataURL(file);  // 将文件解析为base64（二进制）
                 fileReader.onload = ev => {  // 在解析完成后调用 resolve 返回数据
                     resolve(ev.target.result); // 若不调用resolve(), 则Promise没有返回值
                     // console.log('文件转码为BASE64：', ev.target.result);
@@ -208,7 +208,7 @@
             // console.log(BASE64);
 
             try {
-                data = await instance.post('/route/upload_single_base64', {
+                data = await instance.post('/upload_single_base64', {
                     file: encodeURIComponent(BASE64),
                     filename: file.name
                 },{

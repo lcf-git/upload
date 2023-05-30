@@ -1,9 +1,9 @@
 const express = require('express'), 
-    multer = require('multer');
+    multer = require('multer'),
 // const fs = require("fs");
-    path = require('path');
-    PORT = 8888,
-    HOST = 'http://127.0.0.1',
+    // path = require('path'),
+    PORT = 7777,
+    HOST = 'http://139.224.198.147:7777',
     HOSTNAME = `${HOST}:${PORT}`
 
 // console.log(__dirname); // 返回当前模块的目录名
@@ -13,6 +13,15 @@ const express = require('express'),
 
 const app = express();
 const upload = multer({ dest: process.cwd() + '\\public\\upload\\temp' });
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, process.cwd() + '\\public\\upload\\temp')
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.filename)
+//     }
+// })
+// const upload = multer({ storage });
 
 // app.post('/upload_single', upload.single('file'), (req, res) => {
 //   // console.log(req.file, req.body)
@@ -69,6 +78,7 @@ const upload = multer({ dest: process.cwd() + '\\public\\upload\\temp' });
 // })
 
 // 注册multer中间件，设置所有接口都允许上传功能
+// .any() 接受一切上传的文件。文件数组将保存在 req.files。
 app.use(upload.any())
 
 /**
@@ -84,49 +94,3 @@ app.listen(PORT, () => {
     // console.log('服务器已启动...');
     console.log('【文件上传】服务器已启动...' + '\n' + `Example app listening on port ${PORT}`);
 })
-
-// -----------------------------------------
-// const express = require('express');
-// const router = express.Router();
-// // 上传图片接口
-// const fs = require('fs');
-// const multer = require('multer')
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, './uploads')
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, Date.now() + file.originalname)
-//     }
-// })
-
-// const createFolder = folder => {
-//     try {
-//         fs.accessSync(folder)
-//     } catch (err) {
-//         fs.mkdirSync(folder)
-//     }
-// }
-
-// const uploadFolder = './uploads/'
-// createFolder(uploadFolder)
-// const upload = multer({
-//     storage
-// })
-
-// router.post('/upload', upload.single('file'), (req, res) => {
-//     const file = req.file
-//     console.log('文件类型: %s', file.mimeType)
-//     console.log('原始文件名: $s', file.originalname)
-//     console.log('文件大小: %s', file.size)
-//     console.log('文件保存路径: %s', file.path)
-//     res.json({
-//         res_code: 0,
-//         name: file.originalname,
-//         url: file.url
-//     })
-// })
-
-
-// module.exports = router

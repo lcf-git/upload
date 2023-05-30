@@ -16,7 +16,7 @@
                 >{{Uploaded.item1.text}}</el-button>
                 <!-- <el-button class="upload_button upload" type="success" :loading="Uploaded.item1.loading">{{Uploaded.item1.text}}</el-button> -->
             </div>
-            <div class="upload_tip">只能上传 PNG/JPG/JPEG 格式图片，且大小不能超过2MB</div>
+            <div class="upload_tip">支持大部分文件格式，大小不能超过2MB</div>
             <!-- 进度条 -->
             <div class="upload_progress">
                 <!-- <div class="value"></div> -->
@@ -66,19 +66,7 @@
             upload_progress = upload.querySelector('.upload_progress');
             // upload_progress_value = upload_progress.querySelector('.value')
             // upload_list = upload.querySelector('.upload_list');
-        let _file = null;  // 用于复制上传的文件信息
-
-        // 判断中文
-        // const isChina = (s) => {
-        //     var reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
-        //     if (reg.test(s)) {
-        //         console.log("包含汉字！");
-        //         return true
-        //     } else {
-        //         console.log("没有包含汉字！");
-        //         return false
-        //     }
-        // }
+        // let _file = null;  // 用于复制上传的文件信息
 
         // 上传按钮变化
         const changeDisable = flag => {
@@ -100,95 +88,6 @@
             Uploaded.item1.stripedFlow = false;  // 关闭动画
             // upload_progress.style.display = 'none';
         }
-
-        // 把选择的文件读取成为BASE64
-        // const changeBASE64 = file => {
-        //     return new Promise(resolve => {
-        //         // 将图片转为base64码格式
-        //         let fileReader = new FileReader(); // 异步操作
-        //         fileReader.readAsDataURL(file);  // 将文件解析为base64
-        //         fileReader.onload = ev => {  // 在解析完成后调用 resolve 返回数据
-        //             resolve(ev.target.result); // 若不调用resolve(), 则Promise没有返回值
-        //             // console.log('文件转码为BASE64：', ev.target.result);
-        //         };
-        //         // this.result 就是我们的读取的结果 是一个base64
-        //         // 可以把base64放到图片的src中，就可以在img上显示图片
-        //     });
-        // };
-        // 把选择的文件读取成为Buffer
-        // const changeBuffer = file => {
-        //     return new Promise(resolve => {
-        //         // 将图片转为Buffer格式
-        //         let fileReader = new FileReader(); // 异步操作
-        //         fileReader.readAsArrayBuffer(file);  // 将文件解析为Buffer
-        //         fileReader.onload = ev => {  // 在解析完成后调用 resolve 返回数据
-        //             let buffer = ev.target.result,  // 获取由base64转换成的buffer编码
-        //                 spark = new SparkMD5.ArrayBuffer(), // 使用hash修改文件名字
-        //                 HASH,
-        //                 suffix;
-
-        //             spark.append(buffer);  // 通过文件内容生成hash名
-        //             HASH = spark.end(); // 获取修改好的名称
-        //             suffix = /\.([a-zA-z0-9]+)/.exec(file.name)[1];  // 获取文件后缀名（以 .xxx 为结尾的 ）
-        //             // console.log('HASH: ', HASH);
-        //             // console.log('suffix: ', suffix);
-
-        //             resolve({
-        //                 buffer,
-        //                 HASH,
-        //                 suffix,
-        //                 filename: `${HASH}.${suffix}`
-        //             }); // 若不调用resolve(), 则Promise没有返回值
-        //             // console.log('文件转码为Buffer：', buffer);
-        //         };
-        //         // this.result 就是我们的读取的结果 是一个base64
-        //         // 可以把base64放到图片的src中，就可以在img上显示图片
-        //     });
-        // };
-
-        // 上传文件到服务器
-        // upload_inp.addEventListener('click', async function() {
-        //     // console.log(_file)
-        //     if (Uploaded.item1.disabled || Uploaded.item1.loading) return;  // 按钮防抖处理
-        //     if (!_file) {
-        //         uploadMessage('请您先选择要上传的文件~~');
-        //         return;
-        //     }
-
-        //     changeDisable(true);  // 上传按钮变化
-        //     // 生成文件的HASH名字
-        //     let {
-        //         filename
-        //     } = await changeBuffer(_file);
-        //     // return;
-
-        //     // console.log(_file, filename)
-        //     // 把文件传递给服务器：FormData / BASE64
-        //     let formData = new FormData();
-        //     formData.append('file', _file);  // 需要传的参数
-        //     formData.append('filename', filename);  // 需要传的参数
-        //     // 用axios发post请求
-        //     instance.post('/route/upload_single_name', formData).then(data => {
-        //         console.log('data', data.code)
-        //         // 成功
-        //         if(+data.code === 200) {  // + 把code 转换为数字
-        //             uploadMessage(`文件已经上传成功~~，您可以基于 ${data.servicePath} 访问这个资源~~`);
-        //             return;
-        //         }
-        //         return Promise.reject(data.codeText);
-        //     }).catch(reason => {
-        //         // 失败
-        //         uploadMessage(`文件上传失败，请您稍后再试~~（错误信息：${reason}）`);
-        //     }).finally(() => {
-        //         // 无论成功或失败都走这里
-        //         changeDisable(false);  // 按钮变化控制
-        //         upload_abbre.style.display = 'none';  // 显示图片标签
-        //         upload_abbre_img.src = '';  // 展示图片
-        //         Uploaded.item1.disabled = false;  // 启用按钮
-        //         upload_inp.value = null; // 清空本地缓存文件（若不清空，则无法选择重复文件）
-        //         _file = null;  // 复制文件置空
-        //     })
-        // })
 
         // 文件预览，就是把文件对象转换为BASE64，赋值给图片的SRC属性即可
         upload_inp.addEventListener('change', async function() {
@@ -214,12 +113,6 @@
             //     uploadMessage('上传的文件不能超过2MB~~');
             //     return;
             // }
-            // Uploaded.item1.disabled = true;  // 上传按钮禁用
-            // BASE64 = await changeBASE64(file); // 转为base64
-
-            // upload_tip.style.display = 'none';  // 提示语
-            // upload_abbre.style.display = 'block';  // 显示图片标签
-            // upload_abbre_img.src = BASE64;  // 展示图片
             changeDisable(true)
 
             try {
@@ -228,7 +121,7 @@
                 formData.append('file', file);  // 需要传的参数
                 formData.append('filename', file.name);  // 需要传的参数
                 // 用axios发post请求
-                data = await instance.post('/route/upload_single', formData, {
+                data = await instance.post('/upload_single', formData, {
                     // 文件上传中的回调函数 xhr.upload.onprogress
                     onUploadProgress(ev) {
                         // console.log(ev)
