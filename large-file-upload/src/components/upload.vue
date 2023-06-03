@@ -8,6 +8,7 @@
         <uploadMultifile/>
         <uploadDrag/>
         <uploadLargeFiles/>
+        <test/>
     </div>
 
 </template>
@@ -20,6 +21,7 @@
     import uploadMultifile from './uploadMultifile.vue'  // 多文件上传（同uploadSingle）
     import uploadDrag from './uploadDrag.vue'  // 拖拽上传（同uploadSingle）
     import uploadLargeFiles from './uploadLargeFiles.vue'  // 大文件上传
+    import test from './test.vue'  // 测试上传
 </script>
 
 <style scoped>

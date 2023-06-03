@@ -1,18 +1,22 @@
 const express = require('express'), 
     multer = require('multer'),
-// const fs = require("fs");
-    // path = require('path'),
-    PORT = 7777,
-    HOST = 'http://139.224.198.147:7777',
-    HOSTNAME = `${HOST}:${PORT}`
-
+    // multiparty = require('connect-multiparty'),
+    fs = require("fs"),
+    path = require('path'),
+    PORT = 7777;
+    // HOST = 'http://139.224.198.147:7777',
+    // HOSTNAME = `${HOST}:${PORT}`
+fs.chmodSync(process.cwd(), 755)
 // console.log(__dirname); // 返回当前模块的目录名
+// console.log(process.cwd()); // 当前Node.js进程执行时的文件夹地址——工作目录，保证了文件在不同的目录下执行时，路径始终不变
 // console.log(__filename); // 返回当前模块的文件名
 // console.log(path.dirname(__filename)); // __dirname 等同于 path.dirname(__filename)
-// console.log(process.cwd()); // 当前Node.js进程执行时的文件夹地址——工作目录，保证了文件在不同的目录下执行时，路径始终不变
 
 const app = express();
-const upload = multer({ dest: process.cwd() + '\\public\\upload\\temp' });
+const upload = multer({ dest: process.cwd() + '/public/upload/temp' });
+// const upload = multiparty({ uploadDir: process.cwd() + '\\public\\upload\\temp' });
+// app.use(multiparty({ uploadDir: path.join(process.cwd(), 'public/upload/temp') }))
+
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
 //         cb(null, process.cwd() + '\\public\\upload\\temp')
@@ -86,7 +90,7 @@ app.use(upload.any())
  * 若使用 router.xxx 路由形式，req.files 是 `file` 文件的信息（注意多了一个 s ）
  */
 //引入路由--接入其他接口
-app.use('/route', require("./router/fileRouter"))//通过路由的方式将上传和下载接口引入
+app.use('/route', require("./router/fileRouter_multer.js"))//通过路由的方式将上传和下载接口引入
 
 // app.listen(port, () => console.log('服务器已启动...'));
 app.listen(PORT, () => {

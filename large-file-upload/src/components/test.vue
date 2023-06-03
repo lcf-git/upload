@@ -1,11 +1,10 @@
 <template>
-
     <div class="item">
-        <h3>单一文件上传「缩略图处理」</h3>
-        <section class="upload_box" id="upload3">
+        <h3>上传接口测试</h3>
+        <section class="upload_box" id="upload8">
             <!-- 选择文件 -->
             <!-- accept=".png,.jpg,.jpeg" 限定上传文件的格式「方案二」 -->
-            <input type="file" class="upload_inp" accept=".png,.jpg,.jpeg">
+            <input type="file" class="upload_inp">
             <div class="upload_button_box">
                 <!-- <button class="upload_button select">选择文件</button> -->
                 <!-- <button class="upload_button upload">上传到服务器</button> -->
@@ -16,12 +15,13 @@
                     :loading="Uploaded.item1.loading"
                 >{{Uploaded.item1.text}}</el-button>
             </div>
-            <div class="upload_tip">只能上传 PNG/JPG/JPEG 格式图片，且大小不能超过2MB</div>
-            <!-- 缩略图 -->
-            <div class="upload_abbre">
-                <img style="width: 30%;" src="" alt="">
-                <span><em>移除</em></span>
-            </div>
+            <div class="upload_tip">支持大部分文件格式，大小不能超过2MB</div>
+            <ul class="upload_list">
+                <!-- <li>
+                    <span>文件：...</span>
+                    <span><em>移除</em></span>
+                </li> -->
+            </ul>
             <!-- 进度条 -->
             <div class="upload_progress">
                 <!-- <div class="value"></div> -->
@@ -45,8 +45,6 @@
   import {ref, reactive, onMounted} from 'vue'
   import { instance } from '../js/instance'
   import { ElButton, ElProgress } from 'element-plus'
-//   import '../../node_modules/spark-md5/spark-md5.min.js'
-    import SparkMD5 from 'spark-md5';
   import 'element-plus/es/components/button/style/css'
   import 'element-plus/es/components/progress/style/css'
   import { uploadMessage } from '../assets/js/message'
@@ -55,27 +53,25 @@
     item1: {
         disabled: false,
         loading: false,
-        text: '上传到服务器',
         type: 'success',  // 按钮颜色
+        text: '上传到服务器',
         percentage: 0,  // 进度值
         strokeWidth: 10,  // 进度条长度
         stripedFlow: false,  // 进度条样式
         status: null,  // 进度条状态
-    },
+    }
   })
 
   onMounted(() => {
-    // 文件上传方法
+    // 文件上传方法一
     (function () {
-        let upload = document.querySelector('#upload3'),
+        let upload = document.querySelector('#upload8'),
             upload_inp = upload.querySelector('.upload_inp'),
             upload_button_select = upload.querySelector('.upload_button.select'),
             upload_button_upload = upload.querySelector('.upload_button.upload'),
-            upload_abbre = upload.querySelector('.upload_abbre'),
-            upload_abbre_img = upload_abbre.querySelector('#upload3 img'),
-            upload_progress = upload.querySelector('.upload_progress'),
-            upload_tip = upload.querySelector('.upload_tip');
-            // upload_list = upload.querySelector('.upload_list');
+            upload_tip = upload.querySelector('.upload_tip'),
+            upload_list = upload.querySelector('.upload_list'),
+            upload_progress = upload.querySelector('.upload_progress');
         let _file = null;  // 用于复制上传的文件信息
 
         // 判断中文
@@ -93,6 +89,8 @@
         // 上传按钮变化
         const changeDisable = flag => {
             if (flag) {
+                // upload_button_select.classList.add('disable');
+                // upload_button_upload.classList.add('loading');
                 Uploaded.item1.disabled = true;  // 禁用上传按钮
                 Uploaded.item1.loading = true;  // 启用加载动画
                 Uploaded.item1.text = 'loading...';  // 修改按钮字
@@ -110,75 +108,30 @@
             Uploaded.item1.stripedFlow = false;  // 关闭动画
             // upload_progress.style.display = 'none';  //  隐藏上传进度条
         }
-
-        // 把选择的文件读取成为BASE64
-        const changeBASE64 = file => {
-            return new Promise(resolve => {
-                // 将图片转为base64码格式
-                let fileReader = new FileReader(); // 异步操作
-                fileReader.readAsDataURL(file);  // 将文件解析为base64
-                fileReader.onload = ev => {  // 在解析完成后调用 resolve 返回数据
-                    resolve(ev.target.result); // 若不调用resolve(), 则Promise没有返回值
-                    // console.log('文件转码为BASE64：', ev.target.result);
-                };
-                // this.result 就是我们的读取的结果 是一个base64
-                // 可以把base64放到图片的src中，就可以在img上显示图片
-            });
-        };
-        // 把选择的文件读取成为Buffer
-        const changeBuffer = file => {
-            return new Promise(resolve => {
-                // 将图片转为Buffer格式
-                let fileReader = new FileReader(); // 异步操作
-                fileReader.readAsArrayBuffer(file);  // 将文件解析为Buffer
-                fileReader.onload = ev => {  // 在解析完成后调用 resolve 返回数据
-                    let buffer = ev.target.result,  // 获取由base64转换成的buffer编码
-                        spark = new SparkMD5.ArrayBuffer(), // 使用hash修改文件名字
-                        HASH,
-                        suffix;
-
-                    spark.append(buffer);  // 通过文件内容生成hash名
-                    HASH = spark.end(); // 获取修改好的名称
-                    suffix = /\.([a-zA-z0-9]+)/.exec(file.name)[1];  // 获取文件后缀名（以 .xxx 为结尾的 ）
-                    // console.log('HASH: ', HASH);
-                    // console.log('suffix: ', suffix);
-
-                    resolve({
-                        buffer,
-                        HASH,
-                        suffix,
-                        filename: `${HASH}.${suffix}`
-                    }); // 若不调用resolve(), 则Promise没有返回值
-                    // console.log('文件转码为Buffer：', buffer);
-                };
-                // this.result 就是我们的读取的结果 是一个base64
-                // 可以把base64放到图片的src中，就可以在img上显示图片
-            });
-        };
-
         // 上传文件到服务器
-        upload_button_upload.addEventListener('click', async function() {
+        upload_button_upload.addEventListener('click', function() {
             // console.log(_file)
             if (Uploaded.item1.disabled || Uploaded.item1.loading) return;  // 按钮防抖处理
             if (!_file) {
-                uploadMessage('请您先选择要上传的文件~~');
-                return;
+                uploadMessage('请您先选择要上传的文件~~')
+                return
             }
 
-            changeDisable(true);  // 上传按钮变化
-            // 生成文件的HASH名字
-            let {
-                filename
-            } = await changeBuffer(_file);
-            // return;
+            // 判断文件名是否包含中文
+            // if(isChina(_file.name)) {
+            //     let [file_name, file_ext] = _file.name.split('.')
+            //     file_name = encodeURI(file_name);
+            //     _file.name = file_name + '.' + file_ext;  // 无法修改 _file.name
+            //     console.log(_file.name)
+            // };
 
-            // console.log(_file, filename)
+            changeDisable(true);  // 上传按钮变化
             // 把文件传递给服务器：FormData / BASE64
             let formData = new FormData();
             formData.append('file', _file);  // 需要传的参数
-            formData.append('filename', filename);  // 需要传的参数
+            formData.append('filename', _file.name);  // 需要传的参数
             // 用axios发post请求
-            instance.post('/upload_single_name', formData, {
+            instance.post('/test', formData, {
                 // 文件上传中的回调函数 xhr.upload.onprogress
                 onUploadProgress(ev) {
                     // console.log(ev)
@@ -204,23 +157,22 @@
                 uploadMessage(`文件上传失败，请您稍后再试~~（错误信息：${reason}）`);
             }).finally(() => {
                 // 无论成功或失败都走这里
+                clearHandle(); // 清除展示标签
                 changeDisable(false);  // 按钮变化控制
-                clearHandle()
             })
         })
 
-        // upload_abbre
         // 移除文件逻辑
         const clearHandle = () => {
-            upload_abbre.style.display = 'none';  // 隐藏图片标签
-            upload_abbre_img.src = '';  // 清空图片
-            Uploaded.item1.disabled = false;  // 启用按钮
-            _file = null;  // 复制文件置空
-            upload_inp.value = null; // 清空本地缓存文件（若不清空，则无法选择重复文件）
+            _file = null;  // 删除文件后置空复制的信息
+            upload_tip.style.display = 'block';
+            upload_list.style.display = 'none';
+            upload_list.innerHTML = ``;  // 清除删除等标签
+            upload_inp.value = null; // 清空文件对象中的文件
             // console.log(upload_inp.files)
         };
         // 移除按钮的点击处理
-        upload_abbre.addEventListener('click', function(ev) {  // 事件监听父元素
+        upload_list.addEventListener('click', function(ev) {  // 事件监听父元素
             // console.log(ev.target);  // 触发事件的标签
             let target = ev.target;
             if (target.tagName==="EM") {  // 判断点击的是否为子元素标签<em/>
@@ -229,17 +181,14 @@
             }
         });
         
-        // 文件预览，就是把文件对象转换为BASE64，赋值给图片的SRC属性即可
-        upload_inp.addEventListener('change', async function() {
+        // 监听用户选择文件的操作
+        upload_inp.addEventListener('change', function() {
             // upload_inp.files 获取用户选中的文件对象（object）
             //  + name：文件名
             //  + size：文件大小
             //  + type：文件的MIME类型
-            var file = upload_inp.files[0],
-                BASE64;
-                // data;  // 获取文件对象中的最新上传的文件
-            if (!file) return; // 若没文件则返回空
-            _file = file;  // 复制一份上传文件
+            var file = upload_inp.files[0];  // 获取文件对象中的最新上传的文件
+            if (!file) return; // 若没文件则返回
             console.log(file)
 
             // 限制文件上传的格式「方案一」
@@ -253,13 +202,18 @@
                 uploadMessage('上传的文件不能超过2MB~~');
                 return;
             }
-            Uploaded.item1.disabled = true;  // 上传按钮禁用
-            BASE64 = await changeBASE64(file); // 转为base64
 
-            // upload_tip.style.display = 'none';  // 提示语
-            upload_abbre.style.display = 'block';  // 显示图片标签
-            upload_abbre_img.src = BASE64;  // 展示图片
-            Uploaded.item1.disabled = false;  // 启用
+            _file = file;  // 复制一份上传文件
+
+            // 显示上传的文件
+            upload_tip.style.display = 'none';
+            upload_list.style.display = 'block';
+            upload_list.innerHTML = `
+            <li>
+                <span>文件：${file.name}</span>
+                <span><em>移除</em></span>
+            </li>`
+            ;
         });
 
         //  点击选择文件按钮，触发上传文件INPUT框选择文件的行为

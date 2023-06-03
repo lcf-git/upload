@@ -38,6 +38,7 @@
 
 <script setup>
   import {ref, reactive, onMounted} from 'vue'
+  import SparkMD5 from 'spark-md5';
   import { instance } from '../js/instance'
   import { ElButton, ElProgress } from 'element-plus'
   import 'element-plus/es/components/button/style/css'
@@ -147,6 +148,7 @@
             //  + name：文件名
             //  + size：文件大小
             //  + type：文件的MIME类型
+            console.time('time')
             var file = upload_inp.files[0]
             if (!file) return; // 若没文件则返回
             console.log(file)
@@ -272,6 +274,7 @@
                     // clear();
                     return;
                 }
+                console.timeEnd('time')
                 // instance.post('/upload_merge', {
                 //     HASH,
                 //     count
